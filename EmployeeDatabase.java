@@ -1,18 +1,45 @@
+import java.util.HashMap;
+
 public class EmployeeDatabase {
-    public void addEmployee(Employee employee) {
-        // Add an employee to the database
+    public HashMap<Integer, Employee> database;
+
+    public EmployeeDatabase() {
+        database = new HashMap<>();
+    }
+
+    public void addEmployee(Employee employee) { database.put(employee.getEmployeeNumber(), employee);
     }
 
     public void updateEmployee(Employee employee) {
-        // Update employee information in the database
+        if (database.containsKey(employee.getEmployeeNumber())) {
+            database.put(employee.getEmployeeNumber(), employee);
+        } else {
+            System.out.println("Employee not found in the database. Unable to update.");
+        }
     }
 
     public Employee retrieveEmployee(int employeeNumber) {
-        // Retrieve employee information from the database
-        return null;
+        if (database.containsKey(employeeNumber)) {
+            return database.get(employeeNumber);
+        } else {
+            System.out.println("Employee not found in the database.");
+            return null;
+        }
     }
 
     public void deleteEmployee(int employeeNumber) {
-        // Delete an employee from the database
+        if (database.containsKey(employeeNumber)) {
+            database.remove(employeeNumber);
+        } else {
+            System.out.println("Employee not found in the database. Unable to delete.");
+        }
+    }
+
+    public HashMap<Integer, Employee> getEmployees() {
+        return database;
+    }
+
+    public HashMap<Integer,Employee> database() {
+        return null;
     }
 }
