@@ -4,42 +4,58 @@ public class Employee {
     private int employeeNumber;
     private String lastName;
     private String firstName;
-    private String birthday;
-    private Position position; // Updated to be of type Position
+    private String position;
     private double basicSalary;
-    private double riceSubsidy;
-    private double phoneAllowance;
-    private double clothingAllowance;
-    private double grossSemiMonthlyRate;
-    private String startTime;
-    private String endTime;
     private double hourlyRate;
+    private double riceSubsidy;
+    private double clothingAllowance;
+    private double phoneAllowance;
     private double weeklySalary;
     private double sssDeduction;
     private double pagIbigDeduction;
     private double philhealthDeduction;
     private double incomeTaxDeduction;
 
+    private String startTime; // Define startTime variable
+    private String endTime; // Define endTime variable
+
     public double calculateTotalSalary() {
         // Calculate the total salary based on basic salary, allowances, and deductions
         return basicSalary + riceSubsidy + phoneAllowance + clothingAllowance;
     }
 
-    public void displayEmployeeInfo() {
-        System.out.println("Employee Info:");
-        System.out.println("Name: " + firstName + " " + lastName);
-        System.out.println("Position: " + position.getPositionName()); // Accessing getPositionName() from Position object
-        System.out.println("Total Salary: PHP" + calculateTotalSalary());
-    }
-
-    public Employee(int employeeNumber, String lastName, String firstName, String birthday, Position position, double basicSalary, double hourlyRate) {
+    public Employee(int employeeNumber, String lastName, String firstName, String position, double basicSalary) {
         this.employeeNumber = employeeNumber;
         this.lastName = lastName;
         this.firstName = firstName;
-        this.birthday = birthday;
         this.position = position;
         this.basicSalary = basicSalary;
         this.hourlyRate = hourlyRate;
+        this.riceSubsidy = riceSubsidy;
+        this.clothingAllowance = clothingAllowance;
+        this.phoneAllowance = phoneAllowance;
+    }
+
+    public double calculateHoursWorked(String startTime, String endTime) {
+        if (startTime == null || endTime == null) {
+            return  0; // Return 0 hours if start time or end time is null
+        }
+
+        String[] startParts = startTime.split(":");
+        String[] endParts = endTime.split(":");
+
+        int startHour = Integer.parseInt(startParts[0]);
+        int startMinute = Integer.parseInt(startParts[1]);
+        int endHour = Integer.parseInt(endParts[0]);
+        int endMinute = Integer.parseInt(endParts[1]);
+
+        // Calculate total minutes worked
+        int totalMinutesWorked = (endHour * 60 + endMinute) - (startHour * 60 + startMinute);
+
+        // Convert total minutes worked to hours
+        double totalHoursWorked = totalMinutesWorked / 60.0;
+
+        return totalHoursWorked;
     }
 
     public void calculateWeeklySalary() {
@@ -68,28 +84,78 @@ public class Employee {
         calculateIncomeTaxDeduction(weeklySalary);
     }
 
-    private void calculateSSSDeduction(double salary) {
-        // Implement SSS deduction calculation based on the salary
-        // Add the calculated SSS deduction to the total deductions
-        sssDeduction = 0; // Example: Set SSS deduction to 0 for demonstration
+    public double calculateSSSDeduction(double salary) {
+        // Define the compensation ranges and corresponding contributions in parallel arrays
+        double[] compensationRanges = {3250, 3750, 4250, 4750, 5250, 5750, 6250, 6750, 7250, 7750, 8250, 8750, 9250, 9750, 10250, 10750, 11250, 11750, 12250, 12750, 13250, 13750, 14250, 14750, 15250, 15750, 16250, 16750, 17250, 17750, 18250, 18750, 19250, 19750, 20250, 20750, 21250, 21750, 22250, 22750, 23250, 23750, 24250, 24750, 25250};
+        double[] contributions = {135.00, 157.50, 180.00, 202.50, 225.00, 247.50, 270.00, 292.50, 315.00, 337.50, 360.00, 382.50, 405.00, 427.50, 450.00, 472.50, 495.00, 517.50, 540.00, 562.50, 585.00, 607.50, 630.00, 652.50, 675.00, 697.50, 720.00, 742.50, 765.00, 787.50, 810.00, 832.50, 855.00, 877.50, 900.00, 922.50, 945.00, 967.50, 990.00, 1012.50, 1035.00, 1057.50, 1080.00, 1102.50, 1125.00};
+
+        // Find the appropriate contribution based on the salary
+        double sssContribution = 0;
+        for (int i = 0; i < compensationRanges.length; i++) {
+            if(salary <= compensationRanges[i]) {
+                sssContribution = contributions[i];
+                break;
+            }
+        }
+
+        // Set a calculated SSS deduction
+        return sssDeduction;
     }
 
-    private void calculatePagIbigDeduction(double salary) {
-        // Implement Pag-ibig deduction calculation based on the salary
-        // Add the calculated Pag-ibig deduction to the total deductions
-        pagIbigDeduction = 0; // Example: Set Pag-ibig deduction to 0 for demonstration
+    public double calculatePagIbigDeduction(double salary) {
+        double[] salaryRanges = {10000, 10000.01, 60000};
+        double[] employeeContributionRates = {0.01,0.02};
+        double[] employerContributionRates = {0.02, 0.02};
+
+        double totalContributionRate = 0;
+        for (int i = 0; i < salaryRanges.length - 1; i++) {
+            if (salary >= salaryRanges[i] && salary < salaryRanges[i + 1]) {
+                totalContributionRate = employeeContributionRates[i] + employerContributionRates[i];
+                break;
+            }
+        }
+
+        double pagIbigDeduction = salary * totalContributionRate;
+
+        // Set the calculated Pag-ibig Deduction
+        return pagIbigDeduction;
     }
 
-    private void calculatePhilhealthDeduction(double salary) {
-        // Implement Philhealth deduction calculation based on the salary
-        // Add the calculated Philhealth deduction to the total deduction
-        philhealthDeduction = 0; // Example: Set Philhealth deduction to 0 for demonstration
+    public double calculatePhilhealthDeduction(double salary) {
+        double[] salaryRanges = {10000, 60000};
+        double[] premiumRates = {0.03, 0.03};
+        double[] monthlyPremiumCaps = {300, 1800};
+
+        double philhealthDeduction = 0;
+        for (int i = 0; i < salaryRanges.length; i++) {
+            if (salary <= salaryRanges[i]) {
+                philhealthDeduction = Math.min(salary * premiumRates[i], monthlyPremiumCaps[i]);
+                break;
+            }
+        }
+
+        // Set the calculated Philhealth deduction
+        return philhealthDeduction;
     }
 
-    private void calculateIncomeTaxDeduction(double salary) {
-        // Implement Income Tax deduction calculation based on the salary
-        // Add the calculated Income Tax deduction to the total deduction
-        incomeTaxDeduction = 0; // Example: Set Income Tax deduction to 0 for demonstration
+    public double calculateIncomeTaxDeduction(double salary) {
+        double[] salaryRanges = {20832, 20833, 33333, 66667, 166667, 666667};
+        double[] taxRates = {0, 0.20, 0.25, 0.30, 0.32, 0.35};
+        double[] fixedTaxAmounts = {0, 2500, 10833, 40533.33, 200833.33};
+
+        double incomeTaxDeduction = 0;
+
+        for (int i = 0; i < salaryRanges.length -1; i++) {
+            if (salary <= salaryRanges[i]) {
+                break; // No withholding tax
+            } else if (salary <= salaryRanges[i + 1]) {
+                incomeTaxDeduction = fixedTaxAmounts[i] + (salary - salaryRanges[i]) * taxRates[i];
+                break;
+            }
+        }
+
+        // Set the calculated Income Tax deduction
+        return incomeTaxDeduction;
     }
 
     public double getNetWage() {
@@ -99,16 +165,6 @@ public class Employee {
 
     public double getWeeklySalary() {
         return weeklySalary;
-    }
-
-    public static void main (String[] args) {
-        Position chiefExecutiveOfficer = new Position("Chief Executive Officer");
-        Employee employee = new Employee(1, "Garcia", "Manuel III", "10/11/1983", chiefExecutiveOfficer, 90000.0, 535.71); // Assuming hourly rate is $10
-
-        employee.displayEmployeeInfo();
-
-        employee.calculateWeeklySalary();
-        System.out.println("Weekly Salary: $" + employee.getWeeklySalary());
     }
 
     public int getEmployeeNumber() {
@@ -123,11 +179,7 @@ public class Employee {
         return firstName;
     }
 
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public Position getPosition() {
+    public String getPosition() {
         return position;
     }
 
@@ -139,33 +191,15 @@ public class Employee {
         return hourlyRate;
     }
 
-    public double calculateHoursWorked() {
-        if (startTime == null || endTime == null) {
-            return 0; // Return 0 hours if start time or end time is null
-        }
+    public double getRiceSubsidy() {
+        return riceSubsidy;
+    }
 
-        String[] startParts = startTime.split(";");
-        String[] endParts = endTime.split(";");
+    public double getClothingAllowance() {
+        return clothingAllowance;
+    }
 
-        if (startParts.length != 2 || endParts.length != 2) {
-            return 0; // Return 0 hours if start time or end time format is incorrect
-        }
-        int startHour = Integer.parseInt(startTime.split(";")[0]);
-        int startMinute = Integer.parseInt(startTime.split(";")[1]);
-        int endHour = Integer.parseInt(endTime.split(";")[0]);
-        int endMinute = Integer.parseInt(endTime.split(";")[1]);
-
-        // Calculate total minutes worked
-        int totalMinutesWorked = (endHour * 60 + endMinute) - (startHour * 60 + startMinute);
-
-        // Apply the 10-minute grace period
-        if (startHour < 8 || (startHour == 8 && startMinute < 11)) {
-            totalMinutesWorked -= Math.min(10, totalMinutesWorked);
-        }
-
-        // Convert total minutes worked to hours
-        double totalHoursWorked = totalMinutesWorked / 60.0;
-
-        return totalHoursWorked;
+    public double getPhoneAllowance() {
+        return phoneAllowance;
     }
 }
