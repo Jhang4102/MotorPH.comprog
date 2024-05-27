@@ -1,6 +1,13 @@
 public class SalaryCalculator {
     public double calculateSalary(Employee employee) {
-        // Calculate the salary of an employee based on position, allowances, and deductions
-        return employee.calculateTotalSalary();
+        double totalSalary = employee.calculateTotalSalary();
+        double pagIbigDeduction = employee.calculatePagIbigDeduction(totalSalary);
+        double philhealthDeduction = employee.calculatePhilhealthDeduction(totalSalary);
+        double incomeTaxDeduction = employee.calculateIncomeTaxDeduction(totalSalary);
+
+        // Calculate the netSalary after deductions
+        double netSalary = totalSalary - pagIbigDeduction - philhealthDeduction - incomeTaxDeduction;
+
+        return netSalary;
     }
 }
