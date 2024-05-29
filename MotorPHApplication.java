@@ -1,109 +1,162 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 public class MotorPHApplication extends JFrame {
-    private JTextField employeeNumberField;
-    private JComboBox<String> payCoverageComboBox;
+    private JTable employeeTable;
+    private DefaultTableModel tableModel;
+    private JButton viewEmployeeButton;
+    private JComboBox<String> monthComboBox;
+    private JButton computeButton;
     private JTextArea resultArea;
 
     private List<Employee> employees;
 
     public MotorPHApplication() {
         setTitle("MotorPH Employee App");
-        setSize(400, 300); setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(5, 2));
+        setSize(800, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridLayout(3, 1));
 
-        // Initialize the list of employees
-        int[] employeeNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34};
-        String[] lastNames = {"Garcia", "Lim", "Aquino", "Reyes", "Hernandez", "Villanueva", "San Jose", "Romualdez", "Atienza", "Alvaro", "Salcedo", "Lopez", "Farala", "Martinez", "Romualdez", "Mata", "De Leon", "San Jose", "Rosario", "Bautista", "Lazaro", "Delos Santos", "Santos", "Del Rosario", "Tolentino", "Gutierrez", "Manalaysay", "Villegas", "Ramos", "Maceda", "Aguilar", "Castro", "Martinez", "Santos"};
-        String[] firstNames = {"Manuel III", "Antonio", "Bianca Sofia", "Isabella", "Eduard", "Andrea Mae", "Brad", "Alice", "Rosie", "Roderick", "Anthony", "Josie", "Martha", "Leila", "Fredrick", "Christian", "Selena", "Allison", "Cydney", "Mark", "Darlene", "Kolby", "Vella", "Tomas", "Jacklyn", "Percival", "Garfield", "Lizeth", "Carol", "Emelia", "Delia", "John Rafael", "Carlos Ian", "Beatriz"};
-        String[] positions = {"Chief Executive Officer", "Chief Operating Officer", "Chief Finance Officer", "Chief Marketing Officer", "IT Operations and Systems", "HR Manager", "HR Team Leader", "HR Rank and File", "HR Rank and File", "Accounting Head", "Payroll Manager", "Payroll Team Leader", "Payroll Rank and File", "Payroll Rank and File", "Account Manager", "Account Team Leader", "Account Team Leader", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Account Rank and File", "Sales & Marketing", "Supply Chain and Logistics", "Customer Service and Relations"};
-        double[] basicSalaries = {90000, 60000, 60000, 60000, 52670, 52670, 42975, 22500, 22500, 52670, 50825, 38475, 24000, 24000, 53500, 42975, 41850, 22500, 22500, 23250, 23250, 24000, 22500, 22500, 24000, 24750, 24750, 24000, 22500, 22500, 22500, 52670, 52670, 52670};
-        employees = new ArrayList<>();
+        // Initialize the list of employees using arrays
+        Employee[] employeeArray = {
+                new Employee(1, "Garcia", "Manuel III", "Chief Executive Officer", 90000.0),
+                new Employee(2, "Lim", "Antonio", "Chief Operating Officer", 60000.0),
+                // Add more employees as needed
+        };
 
-        // Add employees to the list
-        for (int i = 0; i < employeeNumbers.length; i++) {
-            employees.add(new Employee(i + 1, firstNames[i], lastNames[i], positions[i], basicSalaries[i]));
-        }
+        // Convert the array to a List and add to the employees list
+        employees = new ArrayList<>(Arrays.asList(employeeArray));
 
-        // Employee Number Input
-        JLabel employeeNumberLabel = new JLabel("Employee Number:");
-        employeeNumberField = new JTextField();
+        // Create the JTable to display employee records
+        String[] columnNames = {"Employee Number", "Last Name", "First Name", "SSS No.", "PhilHealth No.", "TIN", "Pagibig No."};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        employeeTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(employeeTable);
 
-        // Pay Coverage Selection
-        JLabel payCoverageLabel = new JLabel("Pay Coverage");
-        String[] payCoverages = {"Monthly", "Bi-Weekly", "Weekly"};
-        payCoverageComboBox = new JComboBox<>(payCoverages);
-
-        // Buttons for Actions
-        JButton calculatePayrollButton = new JButton("Calculate Payroll");
-        JButton generatePayStubsButton = new JButton("Generate Pay Stubs");
-
-        // Display Area for Results
-        resultArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(resultArea); calculatePayrollButton.addActionListener(new ActionListener() {
+        // View Employee Button
+        viewEmployeeButton = new JButton("View Employee");
+        viewEmployeeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try {
-                    int employeeNumber = Integer.parseInt(employeeNumberField.getText());
-                    String payCoverage = (String) payCoverageComboBox.getSelectedItem();
-
-                    // Validate employee number
-                    if (employeeNumber <= 0) {
-                        throw new IllegalArgumentException("Employee number must be a positive integer.");
-                    }
-
-                    // Validate pay coverage
-                    if (!payCoverage.equals("Monthly") &&! payCoverage.equals("Bi-Weekly") &&! payCoverage.equals("Weekly")) {
-                        throw new IllegalArgumentException("Invalid pay coverage selection.");
-                    }
-
-                    // Find the employee with the entered employee number
-                    Employee employee = null;
-                    for (Employee emp : employees) {
-                        if (emp.getEmployeeNumber() == employeeNumber) {
-                            employee = emp;
-                            break;
-                        }
-                    }
-
-                    if (employee != null) {
-                        // Perform payroll calculation for the specific employee
-                        PayrollProcessor processor = new PayrollProcessor();
-                        List<Employee> singleEmployeeList = new ArrayList<>(); singleEmployeeList.add(employee); processor.calculatePayroll(singleEmployeeList);
-                        resultArea.append("Employee Number: " + employee.getEmployeeNumber() + "\n");
-                        resultArea.append("Name: " + employee.getFirstName() + " " + employee.getLastName() + "\n");
-                        resultArea.append("Position: " + employee.getPosition() + "\n");
-                        resultArea.append("Total Salary: " + employee.calculateTotalSalary() + "\n");
-                    } else { JOptionPane.showMessageDialog(null, "Employee not found.");
-                    }
-                } catch (NumberFormatException ex) { JOptionPane.showMessageDialog(null, "Invalid Employee Number. Please enter a valid integer.");
-                } catch (IllegalArgumentException ex) { JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
-                } catch (Exception ex) { JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+                int selectedRow = employeeTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int employeeNumber = (int) tableModel.getValueAt(selectedRow, 0);
+                    // Open a new frame for the selected employee
+                    openEmployeeDetailsFrame(employeeNumber);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an employee.");
                 }
-            }
-        }); generatePayStubsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Add logic to generate pay stubs
-                PayrollProcessor processor = new PayrollProcessor(); processor.generatePayStubs(employees);
-                resultArea.append("Pay stubs generated.\n");
             }
         });
 
-        add(employeeNumberLabel);
-        add(employeeNumberField);
-        add(payCoverageLabel);
-        add(payCoverageComboBox);
-        add(calculatePayrollButton);
-        add(generatePayStubsButton);
-        add(scrollPane);
+        // Month Selection ComboBox
+        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        monthComboBox = new JComboBox<>(months);
 
-        setVisible(true);
+        // Compute Button
+        computeButton = new JButton("Compute");
+        computeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = employeeTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int employeeNumber = (int) tableModel.getValueAt(selectedRow, 0);
+                    String selectedMonth = (String) monthComboBox.getSelectedItem();
+                    // Perform salary computation for the selected employee and month
+                    computeEmployeeSalary(employeeNumber, selectedMonth);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an employee to compute salary.");
+                }
+            }
+        });
+
+        // Display Area for Results
+        resultArea = new JTextArea();
+        JScrollPane resultScrollPane = new JScrollPane(resultArea);
+
+        // Add components to the frame
+        add(scrollPane);
+        add(viewEmployeeButton);
+        add(monthComboBox);
+        add(computeButton);
+        add(resultScrollPane);
+
+        // Populate the JTable with employee records
+        for (Employee emp : employees) {
+            Object[] rowData = {emp.getEmployeeNumber(), emp.getLastName(), emp.getFirstName(), "", "", "", ""}; // Placeholder for SSS No., PhilHealth No., TIN, Pagibig No.
+            tableModel.addRow(rowData);
         }
 
-        public static void main(String[] args) {
+        setVisible(true);
+    }
+
+    private void openEmployeeDetailsFrame(int employeeNumber) {
+        // Find the employee with the specified employee number
+        Employee selectedEmployee = null;
+        for (Employee emp : employees) {
+            if (emp.getEmployeeNumber() == employeeNumber) {
+                selectedEmployee = emp;
+                break;
+            }
+        }
+
+        if (selectedEmployee != null) {
+            // Create a new frame to display employee details
+            JFrame employeeDetailsFrame = new JFrame("Employee Details");
+            employeeDetailsFrame.setSize(300, 200); employeeDetailsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            employeeDetailsFrame.setLayout(new GridLayout(5,2));
+
+            // Display employee details in labels
+            JLabel employeeNumberLabel = new JLabel("Employee Number: " + selectedEmployee.getEmployeeNumber());
+            JLabel firstNameLabel = new JLabel("First Name: " + selectedEmployee.getFirstName());
+            JLabel lastNameLabel = new JLabel("Last Name: " + selectedEmployee.getLastName());
+            JLabel positionLabel = new JLabel("Position: " + selectedEmployee.getPosition());
+            JLabel salaryLabel = new JLabel("Total Salary: " + selectedEmployee.calculateTotalSalary());
+
+            // Add labels to the frame
+            employeeDetailsFrame.add(employeeNumberLabel);
+            employeeDetailsFrame.add(firstNameLabel);
+            employeeDetailsFrame.add(lastNameLabel);
+            employeeDetailsFrame.add(positionLabel);
+            employeeDetailsFrame.add(salaryLabel);
+
+            // Make the frame visible
+            employeeDetailsFrame.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "Employee not found.");
+        }
+    }
+
+    private void computeEmployeeSalary(int employeeNumber, String selectedMonth) {
+        double totalSalary = 0.0; // Declare and initialize totalSalary variable
+        // Find the employee with the specified employee number
+        Employee selectedEmployee = null;
+        for (Employee emp : employees) {
+            if (emp.getEmployeeNumber() == employeeNumber) {
+                selectedEmployee = emp;
+                break;
+            }
+        }
+
+        if (selectedEmployee != null) {
+            // Calculate the salary based on the employee's basic salary and any additional factors
+            totalSalary = selectedEmployee.calculateTotalSalary();
+
+            // Display the computed total salary in the result area
+            resultArea.setText(""); // Clear previous results
+            resultArea.append("Employee Number: " + selectedEmployee.getEmployeeNumber() + "\n");
+            resultArea.append("Name: " + selectedEmployee.getFirstName() + " " + selectedEmployee.getLastName() + "\n");
+            resultArea.append("Position: " + selectedEmployee.getPosition() + "\n");
+            resultArea.append("Month: " + selectedMonth + "\n");
+            resultArea.append("Total Salary for " + selectedMonth + " " + totalSalary + "\n");
+        } else {
+            JOptionPane.showMessageDialog(null, "Employee not found.");
+        }
+    }
+
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new MotorPHApplication();
