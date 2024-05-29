@@ -12,9 +12,9 @@ public class MotorPHApplication extends JFrame {
     private List<Employee> employees;
 
     public MotorPHApplication() {
-        setTitle("MotorPH Application");
-        setSize(400, 200); setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(4, 2));
+        setTitle("MotorPH Employee App");
+        setSize(400, 300); setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridLayout(5, 2));
 
         // Initialize the list of employees
         int[] employeeNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34};
