@@ -15,6 +15,7 @@ public class MotorPHEmployeeAppGUI extends JFrame {
     private final JTextField philHealthField;
     private final JTextField tinField;
     private final JTextField pagibigField;
+
     public MotorPHEmployeeAppGUI() {
         setTitle("MotorPH Employee App GUI");
         setSize(1200, 400); setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -146,21 +147,19 @@ public class MotorPHEmployeeAppGUI extends JFrame {
         employeeDetailsFrame.setSize(400, 200);
         employeeDetailsFrame.setLayout(new FlowLayout());
 
-        JLabel monthLabel = new JLabel("Select Month:");
-        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        JLabel monthLabel = new JLabel("Select Month");
+        String[] months = {"January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
         JComboBox<String> monthComboBox = new JComboBox<>(months);
         JButton computeButton = new JButton("Compute");
 
         // Add action listener to the Compute button
         computeButton.addActionListener(e -> {
             String selectedMonth = (String) monthComboBox.getSelectedItem();
-            Employee selectedEmployee = findEmployeeByNumber(employeeNumber); // Retrieve the selected employee
-            if (selectedEmployee != null) {
-                double salary = calculateSalaryForMonth(selectedEmployee, selectedMonth);
+            Employee selectedEmployee = findEmployeeByNumber(employeeNumber);
 
-                // Display the salary details
-                JOptionPane.showMessageDialog(null, "Salary details for Employee #" + selectedEmployee.getEmployeeNumber() + " in " + selectedMonth + ": PHP" + salary);
-            } else { JOptionPane.showMessageDialog(null, "Employee not found in the database.");
+            if (selectedEmployee != null) {
+                double salary = calculateSalaryForMonth(selectedEmployee, selectedMonth); JOptionPane.showMessageDialog(null, "Salary details for Employee #" + selectedEmployee.getEmployeeNumber() + " in" + selectedMonth + ": PHP " + salary);
+            } else {JOptionPane.showMessageDialog(null, "Employee not found in the database.");
             }
         });
 
